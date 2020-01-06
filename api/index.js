@@ -1,5 +1,6 @@
 const express = require('express'),
-bodyParser = require('body-parser');
+bodyParser = require('body-parser'),
+cors = require('cors');
 
 const uploadFilesRouter = require('./Routes/uploadFilesRouter');
 
@@ -7,6 +8,7 @@ const port = process.env.PORT || 3000;
 
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.json());
 
 // routes for upload service: 
