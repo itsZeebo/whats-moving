@@ -23,7 +23,7 @@ const App: React.FC = () => {
       <Router>
         <div className="app-nav">
           <img alt="logo" src={`${process.env.PUBLIC_URL}/assets/logo.svg`} className="logo" />
-          {ROUTES.map(route => <Link to={route.url}>{route.title}</Link>)}
+          {ROUTES.map(route => <Link key={route.title} to={route.url}>{route.title}</Link>)}
         </div>
 
         <div className="app-content">
