@@ -4,9 +4,8 @@ import "react-dropzone-uploader/dist/styles.css";
 import React from "react";
 
 import Dropzone, { IFileWithMeta, IUploadParams, StatusValue } from "react-dropzone-uploader";
-import uuidv4 from "uuid/v4";
 
-const UPLOAD_URL = "http://localhost:6666";
+const UPLOAD_URL = "http://localhost:3005/uploadFile";
 
 export default function UploadComponent() {
     return <div className="upload-component">
@@ -18,17 +17,7 @@ export default function UploadComponent() {
     </div>;
 }
 
-const _getUploadParams = (metadata: IFileWithMeta): IUploadParams => {
-    const body = new FormData();
-
-    body.append("file", metadata.file);
-    body.append("videoId", uuidv4());
-
-    return {
-        url: UPLOAD_URL,
-        body
-    }
-}
+const _getUploadParams = (metadata: IFileWithMeta): IUploadParams => { return { url: UPLOAD_URL } }
 
 const _handleChangeStatus = (file: IFileWithMeta, status: StatusValue, allFiles: IFileWithMeta[]) =>
     console.log(`File status changed for file: ${file.meta.name}, Status: ${status}`);
