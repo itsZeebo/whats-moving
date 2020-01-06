@@ -1,25 +1,21 @@
-const express = require('express');
+const express = require('express'),
+bodyParser = require('body-parser');
 
-const testService = require('./Service/testService');
+const uploadFilesRouter = require('./Routes/uploadFilesRouter');
+
+const port = process.env.PORT || 3000;
 
 const app = express();
-const port = 3000;
 
-app.get('/', (req, res) => res.send('Hello World!'));
+app.use(bodyParser.json());
 
-app.get('/testRoute/:bool', (req, res) => {
-    let bool = req.params.bool;
-    testService.test(bool)
-    .then(result => {
-        console.log('test succeed'); 
-        res.send(result);
-    })
-    .catch(err => {
-        console.log('ERROR occured');
-        res.status(500).send(err); 
-    });
+// routes for upload service: 
+app.use('/uploadFile', uploadFilesRouter);
+
+// isAlive route:
+app.get('/isAlive', (req, res) => {
+    res.send(true);
 });
-
 
 
 app.listen(port, () => console.log(`app listening on port ${port}!`));
