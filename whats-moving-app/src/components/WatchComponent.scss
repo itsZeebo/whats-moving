@@ -1,0 +1,41 @@
+.watch-component {
+    width: 80%;
+    margin: 0 auto;
+    border: 1px solid rgb(56, 56, 56);
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .video-display {
+        width: 70%;
+        height: 550px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.4) inset;
+        margin: 20px 50px;
+        padding: 20px 10px;
+    }
+
+    .video-list {
+        width: 20%;
+        height: 550px;
+        padding: 20px 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.4) inset;
+        float: right;
+        margin: 20px 50px;
+
+        .video-item {
+            height: 50px;
+            width: 80%;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+
+            &:not(:last-child) {
+                border-bottom: 1px solid black;
+            }
+        }
+    }
+}
