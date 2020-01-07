@@ -3,21 +3,43 @@ const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 
 // function that sets the fps of video to given fps. 
-function setFps(filePath, fps) {
-    // TODO: 
+function setFps(file, fps) {
+    let newFilePath = path.join(path.dirname(file.path), file.originalname);
     return new Promise((resolve, reject) => {
-        resolve();
+        ffmpeg()
+        .input(file.path)
+        .outputOptions([
+            '-r',
+            fps,
+            '-f',
+            'mp4',
+            '-an',
+            '-vcodec',
+            'libx264',
+            '-b:v',
+            '2048k'
+        ])
+        .output(newFilePath)
+        .on('start', (command) => {
+            console.log(`ffmpeg started with the command: ${command}`);
+        })
+        .on('error', (err) => {
+            console.log('error ffmpeg when try to change fps');
+            reject(err);
+          })
+        .on('end', () => {
+            console.log('fps changed');
+            resolve(newFilePath);
+        })
+        .run()
     })
 }
 
 // function that devide video into it's frames - with wanted FPS. 
-function devideIntoFrames(filePath) {
+function divideIntoFrames(filePath) {
     return new Promise ((resolve, reject) => {
         ffmpeg()
-        .input(`${filePath}`)
-        .outputOptions([
-            `-r 1/1` 
-        ])
+        .input(filePath)
         .output(`${path.dirname(filePath)}/frames/%03d.jpg`)
         .on('start', (command) => {
             console.log(`ffmpeg started with the command: ${command}`);
@@ -36,5 +58,5 @@ function devideIntoFrames(filePath) {
 
 module.exports = {
     setFps, 
-    devideIntoFrames
+    divideIntoFrames
 }

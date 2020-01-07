@@ -1,4 +1,4 @@
-const FfmpefService = require('./FfmpegService').ffmpegProcess,
+const FfmpegService = require('./FfmpegService').ffmpegProcess,
     MotionDetectionService = require('./MotionDetectionService').motionDetection,
     ObjectDetectionService = require('./ObjectDetectionService').objectDetection;
 
@@ -13,7 +13,7 @@ function processFile(file) {
     // TODO: save to elastic. 
 
     console.log(`run ffmpeg methods ...`); 
-    return FfmpefService(file.path, fps)
+    return FfmpegService(file, fps)
     .then(() => {
         console.log('ffmpeg methods finished')
         console.log('run motion detection ... ');
