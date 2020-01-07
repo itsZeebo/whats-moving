@@ -1,14 +1,24 @@
-const MotionDetectionService = require('./MotionDetectionService').motionDetection,
+const FfmpefService = require('./FfmpegService').ffmpegProcess,
+    MotionDetectionService = require('./MotionDetectionService').motionDetection,
     ObjectDetectionService = require('./ObjectDetectionService').objectDetection;
 
+const fps = parseInt(process.env.FPS) || 15;     
 
 // The process includes: 
-// 1. run motion detection algorithm.  
-// 2. run object detection algorithm. 
+// 1. run ffmpeg methods. 
+// 2. run motion detection algorithm.  
+// 3. run object detection algorithm. 
 function processFile(file) {
     console.log('start processFile method');
-    console.log('run motion detection ... ');
-    return MotionDetectionService()
+    // TODO: save to elastic. 
+
+    console.log(`run ffmpeg methods ...`); 
+    return FfmpefService(file.path, fps)
+    .then(() => {
+        console.log('ffmpeg methods finished')
+        console.log('run motion detection ... ');
+        return MotionDetectionService()
+    })
     .then(() => {
         console.log('motion detection finished');
         console.log('run object detection ... ');
