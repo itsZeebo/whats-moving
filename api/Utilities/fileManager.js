@@ -29,7 +29,13 @@ function createFramesDir(dirPath) {
     return fsPromise.mkdirAsync(newDirPath)
 }
 
+//function that remove given path
+function removePath(path) {
+    return fsPromise.unlinkAsync(path);
+}
+
 module.exports = {
     putFileInDir,
-    createFramesDir
+    createFramesDir,
+    removePath
 }
