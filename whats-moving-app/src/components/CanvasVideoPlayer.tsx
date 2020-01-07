@@ -8,7 +8,9 @@ export type Point = {
 }
 
 export interface DrawableShape {
-    path: Point[];
+    topLeft: Point;
+    height: number;
+    width: number;
     color: string;
     frame: number;
 }
@@ -61,7 +63,7 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
 
         if (this._videoRef && !this._videoRef.paused && !this._videoRef.ended) {
             ctx?.drawImage(this._videoRef, 0, 0);
-            SHAPES_TO_DRAW.filter(shape => shape.frame === currentFrame).map(this._drawPathToCanvas);
+            SHAPES_TO_DRAW.filter(shape => shape.frame === currentFrame).map(this._drawShapeToCanvas);
             setTimeout(this._renderFrameToCanvas, 1000 / PLAYER_FPS);
         }
     }
@@ -95,21 +97,13 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
         return (timestamp - (timestamp % PLAYER_FPS)) / PLAYER_FPS;
     }
 
-    _drawPathToCanvas = (shape: DrawableShape) => {
-        const { path, color } = shape;
+    _drawShapeToCanvas = (shape: DrawableShape) => {
+        const { topLeft, color, height, width } = shape;
         const ctx = this._canvasRef?.getContext("2d");
 
         if (ctx) {
             ctx.strokeStyle = color;
-            ctx.beginPath();
-
-            for (let i = 0; i < path.length; i++) {
-                if (i === 0) ctx.moveTo(path[i].x, path[0].y);
-                else ctx.lineTo(path[i].x, path[i].y);
-            }
-
-            ctx.stroke();
-            ctx.closePath();
+            ctx.strokeRect(topLeft.x, topLeft.y, width, height);
         }
     }
 }
