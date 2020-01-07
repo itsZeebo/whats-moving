@@ -1,39 +1,25 @@
 const express = require('express'),
 multer = require('multer');
 
-const UploadFileService = require('../Services/UploadFileService'),
-MotionDetectionService = require('../Services/MotionDetectionService').motionDetection,
-ObjectDetectionService = require('../Services/ObjectDetectionService').objectDetection;
+const ProcessFileService = require('../Services/ProcessFileService');
+const uploadPath = process.env.UPLOAD_PATH || "uploads/"
 
 var router = express.Router();
-var upload = multer({ dest: 'uploads/' })
+var upload = multer({ dest: uploadPath });
 
 router.post('/', upload.single('file'), (req, res) => {
     if (!req.file) {
-        return res.status(400).send('file was not sent in the request body'); 
+        return res.status(400).send('file was not sent in the request'); 
     }
     
     let file = req.file; 
     const fileName = file.originalname;
 
-    // start upload process which includes: 
-    // 1. upload the file to folder.
-    // 2. run motion detection algorithm.  
-    // 3. run object detection algorithm. 
-    return UploadFileService.uploadFile(file)
+    console.log(`file ${fileName} was uploaded successfully to ${uploadPath}`);
+
+    return ProcessFileService.processFile(file)
     .then(() => {
-        console.log(`file ${fileName} was uploaded successfully`);
-        console.log('run motion detection ... ');
-        return MotionDetectionService();
-    })
-    .then(() => {
-        console.log('motion detection finished');
-        console.log('run object detection ... ');
-        return ObjectDetectionService();
-    })
-    .then(() => {
-        console.log('object detection finished');
-        console.log('upload process (and alogrithm) are done');
+        console.log('upload & process (alogrithm) are done');
         return res.send('success');
     })
     .catch(err => {
