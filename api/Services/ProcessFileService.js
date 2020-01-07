@@ -12,12 +12,16 @@ const fps = parseInt(process.env.FPS) || 15;
 // 3. run object detection algorithm. 
 function processFile(file) {
     console.log('start processFile method');
-    
-    const { height, width } = Ffmpeg.getVideoDimensions(file.path);
-    await ElasticProvider.AddVideo(file.filename, file.originalname, height, width);
 
-    console.log(`run ffmpeg methods ...`); 
-    return FfmpefService(file.path, fps)
+    return Ffmpeg.getVideoDimensions(file.path).then((data) => {
+        console.log(`Video height and width are - ${data.height} X ${data.width}`);
+        return ElasticProvider.AddVideo(file.filename, file.originalname, data.height, data.width);
+    }) 
+    .then(() => {
+        console.log("Added video to elasticsearch");
+        console.log(`run ffmpeg methods ...`); 
+        return FfmpefService(file.path, fps)
+    })
     .then(() => {
         console.log('ffmpeg methods finished')
         console.log('run motion detection ... ');

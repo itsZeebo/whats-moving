@@ -35,9 +35,11 @@ function devideIntoFrames(filePath) {
 }
 
 function getVideoDimensions(filePath) {
-    return ffmpeg.ffprobe(filePath, (err, data) => {
-        if (err) console.log(err);
-        else return { height: data.height, width: data.width };
+    return new Promise((resolve, reject) => {
+        ffmpeg.ffprobe(filePath, (err, data) => {
+            if (err) reject(err);
+            else resolve({ height: data.streams[0].height, width: data.streams[0].width });
+        });
     });
 }
 

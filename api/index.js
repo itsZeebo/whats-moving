@@ -1,6 +1,7 @@
 const express = require('express'),
 bodyParser = require('body-parser'),
-cors = require('cors');
+cors = require('cors'),
+elasticProvider = require('./Providers/ElasticsearchProvider');
 
 const uploadFilesRouter = require('./Routes/uploadFilesRouter');
 
@@ -10,6 +11,8 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+
+elasticProvider.connect();
 
 // routes for upload service: 
 app.use('/uploadFile', uploadFilesRouter);
