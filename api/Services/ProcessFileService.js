@@ -12,7 +12,7 @@ function processFile(file) {
     .then(() => {
         console.log('motion detection finished');
         console.log('run object detection ... ');
-        return ObjectDetectionService();
+        return ObjectDetectionService(file);
     })
     .then(() => {
         console.log('object detection finished');

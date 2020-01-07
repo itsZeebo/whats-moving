@@ -1,0 +1,23 @@
+{
+  "name": "whats-moving",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "fluent-ffmpeg": "^2.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "cd whats-moving-app && npm i && cd ../api && npm i && cd ../motion-detected && npm i"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itsZeebo/whats-moving.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/itsZeebo/whats-moving/issues"
+  },
+  "homepage": "https://github.com/itsZeebo/whats-moving#readme"
+}
