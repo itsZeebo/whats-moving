@@ -34,7 +34,15 @@ function devideIntoFrames(filePath) {
     });
 }
 
+function getVideoDimensions(filePath) {
+    return ffmpeg.ffprobe(filePath, (err, data) => {
+        if (err) console.log(err);
+        else return { height: data.height, width: data.width };
+    });
+}
+
 module.exports = {
     setFps, 
-    devideIntoFrames
+    devideIntoFrames,
+    getVideoDimensions
 }

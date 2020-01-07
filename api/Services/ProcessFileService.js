@@ -1,6 +1,8 @@
 const FfmpefService = require('./FfmpegService').ffmpegProcess,
     MotionDetectionService = require('./MotionDetectionService').motionDetection,
-    ObjectDetectionService = require('./ObjectDetectionService').objectDetection;
+    ObjectDetectionService = require('./ObjectDetectionService').objectDetection,
+    Ffmpeg = require('../Utilities/ffmpeg'),
+    ElasticProvider = require('../Providers/ElasticsearchProvider');
 
 const fps = parseInt(process.env.FPS) || 15;     
 
@@ -10,7 +12,9 @@ const fps = parseInt(process.env.FPS) || 15;
 // 3. run object detection algorithm. 
 function processFile(file) {
     console.log('start processFile method');
-    // TODO: save to elastic. 
+    
+    const { height, width } = Ffmpeg.getVideoDimensions(file.path);
+    await ElasticProvider.AddVideo(file.filename, file.originalname, height, width);
 
     console.log(`run ffmpeg methods ...`); 
     return FfmpefService(file.path, fps)
