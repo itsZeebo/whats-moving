@@ -10,11 +10,12 @@ function motionDetection(videoId, videoPath) {
         {"start": 30, "end": 50},
         {"start": 60, "end": 68},
     ]
+    
     // return runAlgo(videoPath) TODO: open it. 
-    return Promise.resolve(result)
+    return Promise.resolve(result) 
     .then((result) => {
         return makePathToFramesArray(videoId, videoPath, result);
-    });
+    })
 }
 
 
@@ -23,10 +24,11 @@ function motionDetection(videoId, videoPath) {
 // function that runs the motion detection algo, as child process. 
 function runAlgo(filePath) {
     return new Promise((resolve, reject) => {
-        let motionProcess = spawn(path.join(__dirname, '../Algorithms/MotionDetection.exe'), [filePath]);
+        let runCommand = `${(process.platform === 'linux' ? 'wine ': '')}${path.join(__dirname, '../Algorithms/MotionDetection.exe')}`;
+        let motionProcess = spawn(runCommand, [filePath]);
         motionProcess.stdout
         .on('data', (data) => {
-            resolve(data);
+            resolve(data.toString());
         })
         .on('error', (err) => {
             reject(err);
