@@ -56,7 +56,17 @@ function divideIntoFrames(filePath) {
     });
 }
 
+function getVideoDimensions(filePath) {
+    return new Promise((resolve, reject) => {
+        ffmpeg.ffprobe(filePath, (err, data) => {
+            if (err) reject(err);
+            else resolve({ height: data.streams[0].height, width: data.streams[0].width });
+        });
+    });
+}
+
 module.exports = {
     setFps, 
-    divideIntoFrames
+    divideIntoFrames,
+    getVideoDimensions
 }
