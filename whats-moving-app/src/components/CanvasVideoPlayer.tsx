@@ -1,6 +1,7 @@
 import "./CanvasVideoPlayer.scss";
 
 import React from "react";
+import { SERVER_SIDE } from "../general";
 
 export type Point = {
     x: number;
@@ -19,6 +20,7 @@ interface Props {
     videoSrc: string;
     height: number;
     width: number;
+    id?: string;
     shapes?: DrawableShape[];
     onVideoPlay?: () => void;
     onVideoPause?: () => void;
@@ -38,14 +40,14 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
     }
 
     render() {
-        const { videoSrc, height, width } = this.props;
+        const { videoSrc, id, height, width } = this.props;
 
         return <div className="video-player-container">
             <video hidden ref={this._setVideoRef}
                 onPlay={this._handleVideoPlay}
                 onPause={this._handleVideoPause}
                 onEnded={this._handleVideoEnd}>
-                <source src={videoSrc} type="video/mp4" />
+                <source src={videoSrc || SERVER_SIDE + `playVideo/${id}`} type="video/mp4" />
             </video>
             <canvas className="video-preview" ref={this._setaCanvasRef} height={height} width={width}></canvas>
             <div className="player-action-bar"></div>

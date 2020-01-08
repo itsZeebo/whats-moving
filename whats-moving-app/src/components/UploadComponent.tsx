@@ -1,11 +1,11 @@
 import "./UploadComponent.scss";
 import "react-dropzone-uploader/dist/styles.css";
-
+import { SERVER_SIDE } from "../general";
 import React from "react";
 
 import Dropzone, { IFileWithMeta, IUploadParams, StatusValue } from "react-dropzone-uploader";
 
-const UPLOAD_URL = "http://localhost:3005/uploadFile";
+const UPLOAD_URL = SERVER_SIDE + "uploadFile";
 
 export default function UploadComponent() {
     return <div className="upload-component">
