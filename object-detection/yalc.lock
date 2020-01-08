@@ -1,0 +1,8 @@
+{
+  "version": "v1",
+  "packages": {
+    "@tensorflow-models/coco-ssd": {
+      "signature": "637863817ac1d9b501d4745e1431296a"
+    }
+  }
+}
