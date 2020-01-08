@@ -1,44 +1,54 @@
-
-
-//require('@tensorflow/tfjs-node');
-const cocoSsd = require('@tensorflow-models/coco-ssd');
+require('dotenv').config();
+const tensorModel = process.env.TENSOR_MODEL == "coco-ssd" ? require('@tensorflow-models/coco-ssd') : require('@tensorflow-models/mobilenet');
 const canvas = require('canvas');
 const Promise = require('bluebird');
 const path = require('path');
 
-function extractFrameName(fullpath){
-  return path.basename(fullpath,'.jpg');
-}
+const ALPHA = Number(process.env.ALPHA || 0.5);
+const VERSION = Number(process.env.VERSION) || 2;
 
-function findObjects(frameObj, width, height) {
+
+function findObjects(framesUrlArray, width, height) {
   let img = new canvas.Image;
-  return cocoSsd.load()
+  let readyFrames = [];
+  let imageData, ctx;
+  let numOfDetections = 0;
+
+  console.log("Object detection process started")
+  return tensorModel.load({ version: VERSION, alpha: ALPHA })
     .then(model => {
-      let readyFrames = [];
+      console.log('TensorFlow Model loaded, starting detection operation');
 
-      console.log('TensorFlow Model loaded');
-
-      return Promise.map(frameObj, frame => {
-        let imageData = canvas.createCanvas(width, height);
-        let ctx = imageData.getContext('2d');
-        
+      return Promise.map(framesUrlArray, frame => {
         img.src = frame.fullpath;
+        imageData = canvas.createCanvas(width, height);
+        ctx = imageData.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
         frame.fullpath = extractFrameName(frame.fullpath);
 
-        ctx.drawImage(img, 0, 0, width, height);
-        return model.detect(imageData)
+        return model.classify(imageData)
           .then(pred => {
             frame.pred = pred;
+            numOfDetections += pred.length;
             readyFrames.push(frame);
           })
           .catch(err => {
+            console.log(`Error occured: ${err}`);
             reject(err);
           });
       })
         .then(() => {
+          console.log(`Detection process done ,${numOfDetections} objects found`);
           return readyFrames;
         })
     })
+    .catch(err => {
+      console.log(`Error occured: ${err}`);
+    });
+}
+
+function extractFrameName(fullpath) {
+  return path.basename(fullpath, '.jpg');
 }
 
 let objects = [
@@ -58,4 +68,4 @@ findObjects(objects, WIDTH, HEIGHT).then(res => {
 
 
 
-module.exports.findObjects = findObjects;
+exports.findObjects = findObjects;
