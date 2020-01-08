@@ -5,15 +5,15 @@ import CanvasVideoPlayer from "./CanvasVideoPlayer";
 import { SERVER_SIDE } from "../general";
 
 interface VideoItem {
-    id: string,
-    fileName: string,
-    height: number,
-    width: number
+    id: string;
+    fileName: string;
+    height: number;
+    width: number;
 }
 
 type ComponentState = {
-    videoList?: VideoItem[]
-    videoToPlay?: VideoItem
+    videoList?: VideoItem[];
+    videoToPlay?: VideoItem;
 }
 
 export default class WatchComponent extends React.PureComponent<{}, ComponentState> {
@@ -38,7 +38,7 @@ export default class WatchComponent extends React.PureComponent<{}, ComponentSta
 
         return <div className="watch-component">
             <div className="video-display">
-                {videoToPlay && <CanvasVideoPlayer videoSrc={SERVER_SIDE + `playVideo/${videoToPlay.id}/${videoToPlay.fileName}`}
+                {videoToPlay && <CanvasVideoPlayer videoId={videoToPlay.id} videoSrc={SERVER_SIDE + `playVideo/${videoToPlay.id}/${videoToPlay.fileName}`}
                     height={videoToPlay.height} width={videoToPlay.width} />}
             </div>
             <div className="video-list" >
@@ -50,5 +50,5 @@ export default class WatchComponent extends React.PureComponent<{}, ComponentSta
         </div>;
     }
 
-    private _playVideo = (videoItem: VideoItem) => { this.setState({ videoToPlay: videoItem }) };
+    private _playVideo = (videoItem: VideoItem) => this.setState({ videoToPlay: videoItem });
 }

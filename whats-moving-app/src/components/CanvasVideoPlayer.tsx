@@ -1,6 +1,7 @@
 import "./CanvasVideoPlayer.scss";
 
 import React from "react";
+import { SERVER_SIDE } from "../general";
 
 export interface DetectionBounds {
     x: number;
@@ -24,7 +25,7 @@ interface Props {
     height: number;
     width: number;
     videoSrc: string;
-    framesShapes?: FrameShapesData[];
+    videoId: string;
     onVideoPlay?: () => void;
     onVideoPause?: () => void;
     onVideoEnd?: () => void;
@@ -38,11 +39,13 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
     _videoRef: HTMLVideoElement | null = null;
     _canvasRef: HTMLCanvasElement | null = null;
 
-    componentDidMount() {
-        if (this.props.framesShapes) SHAPES_TO_DRAW = this.props.framesShapes;
+    async componentWillMount() {
+        SHAPES_TO_DRAW = await this._getVideoFrames(this.props.videoId);;
+    }
 
+    componentDidMount() {
         const ctx = this._canvasRef?.getContext("2d");
-        
+
         if (ctx) {
             ctx.strokeStyle = "#00ff00";
             ctx.font = "6px Arial";
@@ -119,5 +122,17 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
             ctx.strokeRect(x, y, height, width);
             ctx.fillText(`${shape.class} : ${shape.score}`, x, y - 10);
         }
+    }
+
+    private async _getVideoFrames(videoId: string): Promise<FrameShapesData[]> {
+        const result = await fetch(SERVER_SIDE + `GetFrames/${videoId}`, {
+            headers: new Headers({
+                "content-type": "application/json"
+            })
+        });
+
+        const parsedResult = await result.json();
+
+        return parsedResult && parsedResult.frames;
     }
 }
