@@ -24,7 +24,7 @@ function motionDetection(filePath) {
 
     return runAlgo(filePath)
     .then((result) => {
-        console.log(result);
+        console.log(JSON.parse(result));
     })
     .catch((err) => {
         console.log(err);
@@ -37,10 +37,11 @@ function motionDetection(filePath) {
 
 function runAlgo(filePath) {
     return new Promise((resolve, reject) => {
-        let motionProcess = spawn(path.join(__dirname, '../Algorithms/MotionDetection.exe'), [filePath]);
+        let runCommand = `${(process.platform === 'linux' ? 'wine ': '')}${path.join(__dirname, '../Algorithms/MotionDetection.exe')}`;
+        let motionProcess = spawn(runCommand, [filePath]);
         motionProcess.stdout
         .on('data', (data) => {
-            resolve(data);
+            resolve(data.toString());
         })
         .on('error', (err) => {
             reject(err);
