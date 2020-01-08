@@ -26,7 +26,7 @@ function processFile(file) {
     .then(() => {
         console.log('ffmpeg methods finished')
         console.log('run motion detection ... ');
-        return MotionDetectionService()
+        return MotionDetectionService(file.path)
     })
     .then((result) => {
         console.log('motion detection finished');
