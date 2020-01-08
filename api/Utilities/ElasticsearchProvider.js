@@ -36,12 +36,18 @@ function GetAllVideos() {
 }
 
 function GetObjectsByVideoId(videoId) {
-    return client.get({
+    return client.search({
         index: DETECTIONS_INDEX,
-        id: videoId
+        body: {
+            query: {
+                match: {
+                    id: videoId
+                }
+            }
+        }
     })
     .then(data => {
-        return data._source;
+        return data.body.hits.hits[0]._source;
     });
 }
 
