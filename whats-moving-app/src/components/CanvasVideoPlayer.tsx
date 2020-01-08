@@ -17,8 +17,8 @@ export interface Detection {
 }
 
 export interface FrameShapesData {
-    frame: number;
-    detections: Detection[];
+    frame: string;
+    predictions: Detection[];
 }
 
 interface Props {
@@ -31,8 +31,12 @@ interface Props {
     onVideoEnd?: () => void;
 }
 
+interface DetectionsDictionary {
+    [frame: string]: Detection[]
+}
+
 const PLAYER_FPS = 15;
-let SHAPES_TO_DRAW: FrameShapesData[] = [];
+let SHAPES_TO_DRAW: DetectionsDictionary = {};
 let currentFrame = 0;
 
 export default class CanvasVideoPlayer extends React.Component<Props> {
@@ -40,7 +44,9 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
     _canvasRef: HTMLCanvasElement | null = null;
 
     async componentWillMount() {
-        SHAPES_TO_DRAW = await this._getVideoFrames(this.props.videoId);;
+        const result: FrameShapesData[] = await this._getVideoFrames(this.props.videoId);
+
+        result.map(data => SHAPES_TO_DRAW[data.frame] = data.predictions);
     }
 
     componentDidMount() {
@@ -48,7 +54,7 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
 
         if (ctx) {
             ctx.strokeStyle = "#00ff00";
-            ctx.font = "6px Arial";
+            ctx.font = "20px Arial";
             ctx.fillStyle = "#00ff00";
         }
     }
@@ -79,7 +85,8 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
 
         if (ctx && this._videoRef && !this._videoRef.paused && !this._videoRef.ended) {
             ctx.drawImage(this._videoRef, 0, 0);
-            SHAPES_TO_DRAW.filter(shape => shape.frame === currentFrame).map(shape => shape.detections.map(this._drawShapeToCanvas));
+            const drawable = SHAPES_TO_DRAW[(currentFrame + 21).toString()]
+            drawable && drawable.map(pred => this._drawShapeToCanvas(pred, ctx));
             setTimeout(this._renderFrameToCanvas, 1000 / PLAYER_FPS);
         }
     }
@@ -108,19 +115,13 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
         console.log("video ended.");
     }
 
-
-    _convertTimeToFrame(timestamp: number): number {
-        return (timestamp - (timestamp % PLAYER_FPS)) / PLAYER_FPS;
-    }
-
-    _drawShapeToCanvas = (shape: Detection) => {
+    _drawShapeToCanvas = (shape: Detection, canvasRef: any) => {
         const { bbox } = shape;
         const { x, y, height, width } = bbox;
-        const ctx = this._canvasRef?.getContext("2d");
 
-        if (ctx) {
-            ctx.strokeRect(x, y, height, width);
-            ctx.fillText(`${shape.class} : ${shape.score}`, x, y - 10);
+        if (canvasRef) {
+            canvasRef.strokeRect(x, y, width, height);
+            canvasRef.fillText(`${shape.class} : ${shape.score}`, x, y - 25);
         }
     }
 

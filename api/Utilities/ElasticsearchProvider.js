@@ -70,6 +70,8 @@ function GetObjectsByVideoId(videoId) {
 //     ]
 // }
 function AddObjectDetection(videoDetectionObject) {
+    if (!videoDetectionObject) return Promise.reject();
+    
     return client.index({ index: DETECTIONS_INDEX, body: videoDetectionObject });
 }
 
