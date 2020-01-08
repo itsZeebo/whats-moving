@@ -2,31 +2,36 @@ import "./CanvasVideoPlayer.scss";
 
 import React from "react";
 
-export type Point = {
+export interface DetectionBounds {
     x: number;
     y: number;
-}
-
-export interface DrawableShape {
-    topLeft: Point;
     height: number;
     width: number;
-    color: string;
+}
+
+export interface Detection {
+    bbox: DetectionBounds;
+    class: string;
+    score: number;
+}
+
+export interface FrameShapesData {
     frame: number;
+    detections: Detection[];
 }
 
 interface Props {
     videoSrc: string;
     height: number;
     width: number;
-    shapes?: DrawableShape[];
+    framesShapes?: FrameShapesData[];
     onVideoPlay?: () => void;
     onVideoPause?: () => void;
     onVideoEnd?: () => void;
 }
 
 const PLAYER_FPS = 15;
-let SHAPES_TO_DRAW: DrawableShape[] = [];
+let SHAPES_TO_DRAW: FrameShapesData[] = [];
 let currentFrame = 0;
 
 export default class CanvasVideoPlayer extends React.Component<Props> {
@@ -34,7 +39,15 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
     _canvasRef: HTMLCanvasElement | null = null;
 
     componentDidMount() {
-        if (this.props.shapes) SHAPES_TO_DRAW = this.props.shapes;
+        if (this.props.framesShapes) SHAPES_TO_DRAW = this.props.framesShapes;
+
+        const ctx = this._canvasRef?.getContext("2d");
+        
+        if (ctx) {
+            ctx.strokeStyle = "#00ff00";
+            ctx.font = "6px Arial";
+            ctx.fillStyle = "#00ff00";
+        }
     }
 
     render() {
@@ -61,9 +74,9 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
         const ctx = this._canvasRef?.getContext("2d");
         currentFrame++;
 
-        if (this._videoRef && !this._videoRef.paused && !this._videoRef.ended) {
-            ctx?.drawImage(this._videoRef, 0, 0);
-            SHAPES_TO_DRAW.filter(shape => shape.frame === currentFrame).map(this._drawShapeToCanvas);
+        if (ctx && this._videoRef && !this._videoRef.paused && !this._videoRef.ended) {
+            ctx.drawImage(this._videoRef, 0, 0);
+            SHAPES_TO_DRAW.filter(shape => shape.frame === currentFrame).map(shape => shape.detections.map(this._drawShapeToCanvas));
             setTimeout(this._renderFrameToCanvas, 1000 / PLAYER_FPS);
         }
     }
@@ -97,13 +110,14 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
         return (timestamp - (timestamp % PLAYER_FPS)) / PLAYER_FPS;
     }
 
-    _drawShapeToCanvas = (shape: DrawableShape) => {
-        const { topLeft, color, height, width } = shape;
+    _drawShapeToCanvas = (shape: Detection) => {
+        const { bbox } = shape;
+        const { x, y, height, width } = bbox;
         const ctx = this._canvasRef?.getContext("2d");
 
         if (ctx) {
-            ctx.strokeStyle = color;
-            ctx.strokeRect(topLeft.x, topLeft.y, width, height);
+            ctx.strokeRect(x, y, height, width);
+            ctx.fillText(`${shape.class} : ${shape.score}`, x, y - 10);
         }
     }
 }
