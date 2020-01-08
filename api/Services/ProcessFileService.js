@@ -2,7 +2,7 @@ const FfmpegService = require('./FfmpegService').ffmpegProcess,
     MotionDetectionService = require('./MotionDetectionService').motionDetection,
     ObjectDetectionService = require('./ObjectDetectionService').objectDetection,
     Ffmpeg = require('../Utilities/ffmpeg'),
-    ElasticProvider = require('../Providers/ElasticsearchProvider');
+    ElasticProvider = require('../Utilities/ElasticsearchProvider');
 
 const fps = parseInt(process.env.FPS) || 15;     
 
@@ -28,7 +28,7 @@ function processFile(file) {
         console.log('run motion detection ... ');
         return MotionDetectionService()
     })
-    .then(() => {
+    .then((result) => {
         console.log('motion detection finished');
         console.log('run object detection ... ');
         return ObjectDetectionService();

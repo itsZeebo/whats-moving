@@ -29,8 +29,9 @@ function GetAllVideos() {
     return client.search({
         index: VIDEOS_INDEX,
         body: { query: { match_all: {} } }
-    }).then(data => {
-        return data.body.hits.hits.map(_ => _.source);
+    })
+    .then(data => {
+        return data.body.hits.hits.map(_ => _._source);
     });
 }
 
@@ -38,7 +39,8 @@ function GetObjectsByVideoId(videoId) {
     return client.get({
         index: DETECTIONS_INDEX,
         id: videoId
-    }).then(data => {
+    })
+    .then(data => {
         return data._source;
     });
 }
