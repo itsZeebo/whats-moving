@@ -40,7 +40,7 @@ function divideIntoFrames(filePath) {
     return new Promise ((resolve, reject) => {
         ffmpeg()
         .input(filePath)
-        .output(`${path.dirname(filePath)}/frames/%03d.jpg`)
+        .output(`${path.dirname(filePath)}/frames/%d.jpg`)
         .on('start', (command) => {
             console.log(`ffmpeg started with the command: ${command}`);
         })
