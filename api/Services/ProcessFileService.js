@@ -26,12 +26,12 @@ function processFile(file) {
     .then(() => {
         console.log('ffmpeg methods finished')
         console.log('run motion detection ... ');
-        return MotionDetectionService(file.path)
+        return MotionDetectionService(file.filename, file.path)
     })
     .then((result) => {
         console.log('motion detection finished');
         console.log('run object detection ... ');
-        return ObjectDetectionService();
+        return ObjectDetectionService(result);
     })
     .then(() => {
         console.log('object detection finished');

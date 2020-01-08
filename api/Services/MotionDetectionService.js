@@ -1,40 +1,26 @@
 const path = require('path'),
     spawn = require('child_process').spawn;
 
-// function that run the motion detection alog, and return promise.  
-function motionDetection(filePath) {
-    let result = [
-        {"start": 357, "end": 361},
-        {"start": 371, "end": 414},
-        {"start": 552, "end": 617},
-        {"start": 621, "end": 743},
-        {"start": 838, "end": 856},
-        {"start": 887, "end": 899},
-        {"start": 1040, "end": 1135},
-        {"start": 1227, "end": 1233},
-        {"start": 1240, "end": 1277},
-        {"start": 1280, "end": 1291},
-        {"start": 1295, "end": 1296},
-        {"start": 2599, "end": 2606},
-        {"start": 2611, "end": 2615},
-        {"start": 2629, "end": 2647},
-        {"start": 2651, "end": 2655},
-        {"start": 2664, "end": 2710}
-    ]
+const _ = require('lodash');
 
-    return runAlgo(filePath)
+// function that run the motion detection alog, and return promise.  
+function motionDetection(videoId, videoPath) {
+    let result = [
+        {"start": 8, "end": 15},
+        {"start": 30, "end": 50},
+        {"start": 60, "end": 68},
+    ]
+    // return runAlgo(videoPath) TODO: open it. 
+    return Promise.resolve(result)
     .then((result) => {
-        console.log(result);
-    })
-    .catch((err) => {
-        console.log(err);
+        return makePathToFramesArray(videoId, videoPath, result);
     });
 }
 
 
 // ~~~~~ helper functions: ~~~~~~~
 
-
+// function that runs the motion detection algo, as child process. 
 function runAlgo(filePath) {
     return new Promise((resolve, reject) => {
         let motionProcess = spawn(path.join(__dirname, '../Algorithms/MotionDetection.exe'), [filePath]);
@@ -46,6 +32,41 @@ function runAlgo(filePath) {
             reject(err);
         });
     });
+}
+
+// function that gets the result from MotionDetection algo,
+// exmple: 
+// [
+//     {"start": 357, "end": 361},
+//     {"start": 371, "end": 414},
+// ]
+// and transforms it to object that contains the videoId and the frames path: 
+// example output: 
+// {
+//     videoId: "someId",
+//     frames: [
+//         'path to frame',
+//         'path to second frame'
+//         ...etc
+//     ]
+// }  
+function makePathToFramesArray(videoId, videoPath, motionDetectionResult) {
+    let result = {
+        videoId: videoId,
+        frames: []
+    };
+
+    _.forEach(motionDetectionResult, (framesObject) => {
+        let startFrame = framesObject.start,
+        endFrame = framesObject.end;
+
+        for (i=startFrame; i<=endFrame; i++) {
+            let framePath = path.join(path.dirname(videoPath), 'frames', `${i}.jpg`);
+            result.frames.push(framePath);
+        }
+    });
+
+    return Promise.resolve(result);
 }
 
 module.exports = {
