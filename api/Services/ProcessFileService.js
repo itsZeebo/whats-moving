@@ -1,8 +1,11 @@
+const path = require('path');
+
 const FfmpegService = require('./FfmpegService').ffmpegProcess,
     MotionDetectionService = require('./MotionDetectionService').motionDetection,
     ObjectDetectionService = require('./ObjectDetectionService').objectDetection,
     Ffmpeg = require('../Utilities/ffmpeg'),
-    ElasticProvider = require('../Utilities/ElasticsearchProvider');
+    ElasticProvider = require('../Utilities/ElasticsearchProvider'),
+    fileManager = require('../Utilities/fileManager');
 
 const fps = parseInt(process.env.FPS) || 15;     
 
@@ -24,7 +27,7 @@ function processFile(file) {
         return FfmpegService(file, fps)
     })
     .then(() => {
-        console.log('ffmpeg methods finished')
+        console.log('ffmpeg methods finished');
         console.log('run motion detection ... ');
         return MotionDetectionService(file.filename, file.path)
     })
@@ -33,9 +36,13 @@ function processFile(file) {
         console.log('run object detection ... ');
         return ObjectDetectionService(result);
     })
-    .then(() => {
+    .then((videoDetections) => {
         console.log('object detection finished');
-        return Promise.resolve();
+        return ElasticProvider.AddObjectDetection(videoDetections);
+    })
+    .then(() => {
+        let frameDirPath = path.join(path.dirname(file.path), 'frames');
+        return fileManager.removeDir(frameDirPath);
     })
     .catch(err => {
         console.log('error in processFileService: ' + err);

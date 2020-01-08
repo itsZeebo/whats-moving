@@ -17,7 +17,7 @@ router.get('/getAllVideos', (req, res) => {
     }); 
 }); 
 
-router.get('/getById/:id', (req, res) => {
+router.get('/getFrames/:id', (req, res) => {
     // TODO: check Id. 
     let videoId = req.params.id;
     console.log('get objects by VideoId ... ')
@@ -30,19 +30,6 @@ router.get('/getById/:id', (req, res) => {
         console.log(err);
         res.status(500).send('internal server error');
     });
-});
-
-router.post('/addObjectDetection', (req, res) => {
-    // TODO: validations. 
-    let detection = req.body.detection; 
-    return ElasticService.addDetection(detection)
-    .then(() => {
-        res.send('success'); 
-    })
-    .catch(err => {
-        console.log(err); 
-        res.status(500).send('internal server error');
-    })
 });
 
 module.exports = router;

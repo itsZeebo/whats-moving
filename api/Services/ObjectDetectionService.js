@@ -1,7 +1,7 @@
 const ffmpeg = require("fluent-ffmpeg");
 
 // function that run the objectDetection alog, and return promise.  
-function objectDetection(file) {
+function objectDetection(framesObject) {
     return Promise.resolve();
 }
 

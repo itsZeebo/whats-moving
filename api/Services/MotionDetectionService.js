@@ -11,10 +11,10 @@ function motionDetection(videoId, videoPath) {
         {"start": 60, "end": 68},
     ]
     
-    // return runAlgo(videoPath) TODO: open it. 
-    return Promise.resolve(result) 
+    return runAlgo(videoPath) //TODO: open it. 
+    //return Promise.resolve(result) 
     .then((result) => {
-        return makePathToFramesArray(videoId, videoPath, result);
+        return makePathToFramesArray(videoId, videoPath, JSON.parse(result));
     })
 }
 
