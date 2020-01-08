@@ -45,8 +45,26 @@ function GetObjectsByVideoId(videoId) {
     });
 }
 
-function AddObjectDetection(detection) {
-    return client.index({ index: DETECTIONS_INDEX, body: detection });
+// Example Object:
+// let exampleDetection = {
+//     id: "cb600257c4288bd35011158e516fe39f",
+//     frames: [
+//         {
+//             frame: 15,
+//             predictions: [
+//                 {
+//                     topLeft: { x: 1, y: 1 },
+//                     height: 100,
+//                     with: 200
+//                 }, {
+//                     ...
+//                 }
+//             ]
+//         }
+//     ]
+// }
+function AddObjectDetection(videoDetectionObject) {
+    return client.index({ index: DETECTIONS_INDEX, body: videoDetectionObject });
 }
 
 module.exports = {
