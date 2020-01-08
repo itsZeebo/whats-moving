@@ -16,11 +16,10 @@ function ffmpegProcess(file, fps) {
     })
     .then(() => {
         console.log(`remove uncoded file ... `);
-        return fileManager.removePath(file.path);
+        return fileManager.removeFile(file.path);
     })
     .then(() => {
         file.path = _newFilePath;
-        console.log('done ffmpegProcess');
         return Promise.resolve(); 
     })
     .catch((err) => {

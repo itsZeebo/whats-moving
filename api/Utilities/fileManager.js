@@ -1,7 +1,8 @@
 const fs = require('fs'),
 path = require('path');
 
-const Promise = require('bluebird'); 
+const Promise = require('bluebird'),
+    del = require('del');
 
 const fsPromise = Promise.promisifyAll(fs); 
 
@@ -30,12 +31,25 @@ function createFramesDir(dirPath) {
 }
 
 //function that remove given path
-function removePath(path) {
-    return fsPromise.unlinkAsync(path);
+function removeFile(path) {
+    return fsPromise.unlinkAsync(path)
+    .then(() => {
+        console.log('file removed: ' + path);
+        return Promise.resolve();
+    });
+}
+
+function removeDir(path) {
+    return del(path, {force: true})
+    .then(() => {
+        console.log('directory removed: ' + path);
+        return Promise.resolve();
+    });
 }
 
 module.exports = {
     putFileInDir,
     createFramesDir,
-    removePath
+    removeFile,
+    removeDir
 }
