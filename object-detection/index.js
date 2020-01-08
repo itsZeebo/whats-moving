@@ -55,19 +55,19 @@ function extractFrameName(fullpath) {
   return path.basename(fullpath, '.jpg');
 }
 
-let objects = {
-  videoId: "1",
-  frames: ['./004.jpg', './005.jpg', './006.jpg']
-}
-const WIDTH = 352;
-const HEIGHT = 288;
+// let objects = {
+//   videoId: "1",
+//   frames: ['./004.jpg', './005.jpg', './006.jpg']
+// }
+// const WIDTH = 352;
+// const HEIGHT = 288;
 
-findObjects(objects, WIDTH, HEIGHT).then(res => {
-  console.log(res);
-})
-  .catch(err => {
-    console.log(err);
-  });
+// findObjects(objects, WIDTH, HEIGHT).then(res => {
+//   console.log(res);
+// })
+//   .catch(err => {
+//     console.log(err);
+//   });
 
 
 
