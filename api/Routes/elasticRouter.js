@@ -17,7 +17,7 @@ router.get('/getAllVideos', (req, res) => {
     }); 
 }); 
 
-router.get('/getById/:id', (req, res) => {
+router.get('/getFrames/:id', (req, res) => {
     // TODO: check Id. 
     let videoId = req.params.id;
     console.log('get objects by VideoId ... ')
