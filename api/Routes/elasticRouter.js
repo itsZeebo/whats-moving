@@ -32,17 +32,4 @@ router.get('/getById/:id', (req, res) => {
     });
 });
 
-router.post('/addObjectDetection', (req, res) => {
-    // TODO: validations. 
-    let detection = req.body.detection; 
-    return ElasticService.addDetection(detection)
-    .then(() => {
-        res.send('success'); 
-    })
-    .catch(err => {
-        console.log(err); 
-        res.status(500).send('internal server error');
-    })
-});
-
 module.exports = router;

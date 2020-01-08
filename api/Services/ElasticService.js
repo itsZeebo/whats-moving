@@ -8,7 +8,7 @@ function getObjectsByVideoId(videoId) {
     return elasticProvider.GetObjectsByVideoId(videoId);
 }
 
-function addDetection(detection){
+function addVideoDetections(detection){
     return elasticProvider.AddObjectDetection(detection);
 }
 
@@ -16,5 +16,5 @@ function addDetection(detection){
 module.exports = {
     getAllVideos,
     getObjectsByVideoId,
-    addDetection
+    addVideoDetections
 }

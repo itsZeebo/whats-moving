@@ -36,9 +36,9 @@ function processFile(file) {
         console.log('run object detection ... ');
         return ObjectDetectionService(result);
     })
-    .then(() => {
+    .then((videoDetections) => {
         console.log('object detection finished');
-        return Promise.resolve();
+        return ElasticProvider.AddObjectDetection(videoDetections);
     })
     .then(() => {
         let frameDirPath = path.join(path.dirname(file.path), 'frames');
