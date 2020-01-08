@@ -2,8 +2,8 @@ const fs = require("fs");
 const express = require('express');
 const route = express.Router();
 
-route.get(`/:id`, (req, res) => {
-    const fullPath = `uploads/${req.params.id}`;
+route.get(`/:id/:fileName`, (req, res) => {
+    const fullPath = `uploads/${req.params.id}_dir/${req.params.fileName}`;
 
     const head = {
         'Content-Type': 'video/mp4',

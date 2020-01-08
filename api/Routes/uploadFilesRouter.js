@@ -1,11 +1,15 @@
+const path = require('path');
+
 const express = require('express'),
 multer = require('multer');
 
+const fileManager = require('../Utilities/fileManager');
+
 const ProcessFileService = require('../Services/ProcessFileService');
-const uploadPath = process.env.UPLOAD_PATH || "uploads/"
+const uploadDir = process.env.UPLOAD_DIR || "uploads/"
 
 var router = express.Router();
-var upload = multer({ dest: uploadPath });
+var upload = multer({ dest: uploadDir });
 
 router.post('/', upload.single('file'), (req, res) => {
     if (!req.file) {
@@ -15,9 +19,17 @@ router.post('/', upload.single('file'), (req, res) => {
     let file = req.file; 
     const fileName = file.originalname;
 
-    console.log(`file ${fileName} was uploaded successfully to ${uploadPath}`);
+    console.log(`file ${fileName} was uploaded successfully to ${uploadDir}`);
 
-    return ProcessFileService.processFile(file)
+    return fileManager.putFileInDir(file)
+    .then((newPath) => {
+        console.log(`video file moved to: ${newPath}`);
+        return fileManager.createFramesDir(path.dirname(newPath));
+    })
+    .then(() => {
+        console.log('frames dir created');
+        return ProcessFileService.processFile(file);
+    })
     .then(() => {
         console.log('upload & process (alogrithm) are done');
         return res.send('success');

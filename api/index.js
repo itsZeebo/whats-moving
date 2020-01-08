@@ -1,9 +1,12 @@
 const express = require('express'),
-bodyParser = require('body-parser'),
-cors = require('cors');
+    bodyParser = require('body-parser'),
+    cors = require('cors'),
+    elasticProvider = require('./Utilities/ElasticsearchProvider');
 
-const uploadFilesRouter = require('./Routes/uploadFilesRouter');
-const playVideo = require('./Routes/playVideo');
+const uploadFilesRouter = require('./Routes/uploadFilesRouter'),
+    elasticRouter = require('./Routes/elasticRouter'),
+    playVideo = require('./Routes/playVideo');
+
 
 const port = process.env.PORT || 3005;
 
@@ -12,9 +15,14 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+elasticProvider.connect();
+
 // routes for upload service: 
 app.use('/uploadFile', uploadFilesRouter);
 app.use('/playVideo', playVideo);
+
+// routes for elastic: 
+app.use('/', elasticRouter);
 
 // isAlive route:
 app.get('/isAlive', (req, res) => {

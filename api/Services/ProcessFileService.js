@@ -1,18 +1,37 @@
-const MotionDetectionService = require('./MotionDetectionService').motionDetection,
-    ObjectDetectionService = require('./ObjectDetectionService').objectDetection;
+const FfmpegService = require('./FfmpegService').ffmpegProcess,
+    MotionDetectionService = require('./MotionDetectionService').motionDetection,
+    ObjectDetectionService = require('./ObjectDetectionService').objectDetection,
+    Ffmpeg = require('../Utilities/ffmpeg'),
+    ElasticProvider = require('../Utilities/ElasticsearchProvider');
 
+const fps = parseInt(process.env.FPS) || 15;     
 
 // The process includes: 
-// 1. run motion detection algorithm.  
-// 2. run object detection algorithm. 
+// 1. run ffmpeg methods. 
+// 2. run motion detection algorithm.  
+// 3. run object detection algorithm. 
 function processFile(file) {
     console.log('start processFile method');
-    console.log('run motion detection ... ');
-    return MotionDetectionService()
+
+    return Ffmpeg.getVideoDimensions(file.path)
+    .then((data) => {
+        console.log(`Video height and width are - ${data.height} X ${data.width}`);
+        return ElasticProvider.AddVideo(file.filename, file.originalname, data.height, data.width);
+    }) 
     .then(() => {
+        console.log("Added video to elasticsearch");
+        console.log(`run ffmpeg methods ...`); 
+        return FfmpegService(file, fps)
+    })
+    .then(() => {
+        console.log('ffmpeg methods finished')
+        console.log('run motion detection ... ');
+        return MotionDetectionService(file.filename, file.path)
+    })
+    .then((result) => {
         console.log('motion detection finished');
         console.log('run object detection ... ');
-        return ObjectDetectionService(file);
+        return ObjectDetectionService(result);
     })
     .then(() => {
         console.log('object detection finished');
