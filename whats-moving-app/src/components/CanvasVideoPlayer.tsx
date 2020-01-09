@@ -1,4 +1,5 @@
 import "./CanvasVideoPlayer.scss";
+import "../utilities/VideoFrame";
 
 import React from "react";
 import { SERVER_SIDE } from "../general";
@@ -37,11 +38,14 @@ interface DetectionsDictionary {
 
 const PLAYER_FPS = 15;
 let SHAPES_TO_DRAW: DetectionsDictionary = {};
-let currentFrame = 0;
+
+type VideoFrameCtor = () => void;
 
 export default class CanvasVideoPlayer extends React.Component<Props> {
     _videoRef: HTMLVideoElement | null = null;
     _canvasRef: HTMLCanvasElement | null = null;
+
+    _videoFrameHandler: any;
 
     async componentWillMount() {
         const result: FrameShapesData[] = await this._getVideoFrames(this.props.videoId);
@@ -57,13 +61,20 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
             ctx.font = "20px Arial";
             ctx.fillStyle = "#00ff00";
         }
+
+        this._videoFrameHandler = (window as any).VideoFrame({
+            id: 'video-element',
+            frameRate: PLAYER_FPS
+        });
     }
 
     render() {
         const { videoSrc, height, width } = this.props;
 
         return <div className="video-player-container">
-            <video hidden ref={this._setVideoRef}
+            <video controls ref={this._setVideoRef}
+                className="video-element"
+                id="video-element"
                 onPlay={this._handleVideoPlay}
                 onPause={this._handleVideoPause}
                 onEnded={this._handleVideoEnd}>
@@ -71,8 +82,6 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
             </video>
             <canvas className="video-preview" ref={this._setaCanvasRef} height={height} width={width}></canvas>
             <div className="player-action-bar"></div>
-            <button onClick={() => this._videoRef?.play()}>play</button>
-            <button onClick={() => this._videoRef?.pause()}>pause</button>
         </div>;
     }
 
@@ -81,13 +90,14 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
 
     _renderFrameToCanvas = () => {
         const ctx = this._canvasRef?.getContext("2d");
-        currentFrame++;
+        const { height, width } = this.props;
 
-        if (ctx && this._videoRef && !this._videoRef.paused && !this._videoRef.ended) {
-            ctx.drawImage(this._videoRef, 0, 0);
-            const drawable = SHAPES_TO_DRAW[(currentFrame + 21).toString()]
+
+        if (this._videoFrameHandler && ctx && this._videoRef && !this._videoRef.paused && !this._videoRef.ended) {
+            ctx.clearRect(0, 0, width, height);
+            const drawable = SHAPES_TO_DRAW[(this._videoFrameHandler.get()).toString()];
             drawable && drawable.map(pred => this._drawShapeToCanvas(pred, ctx));
-            setTimeout(this._renderFrameToCanvas, 1000 / PLAYER_FPS);
+            setTimeout(this._renderFrameToCanvas, 1000 / PLAYER_FPS + 1);
         }
     }
 
@@ -110,7 +120,6 @@ export default class CanvasVideoPlayer extends React.Component<Props> {
     _handleVideoEnd = () => {
         const { onVideoEnd } = this.props;
 
-        currentFrame = 0;
         onVideoEnd && onVideoEnd();
         console.log("video ended.");
     }
